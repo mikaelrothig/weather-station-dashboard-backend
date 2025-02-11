@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "es2016", // or your desired ES version
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "dist" // Output directory for compiled JavaScript
+  }
+}
