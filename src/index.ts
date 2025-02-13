@@ -11,10 +11,8 @@ const fetchData = async () => {
             cachefix: '-33.82x18.47x0',
         };
 
-        WindguruApi.fetchData(params)
-            .then(data => console.log(data))
-            .catch(error => console.error(error));
-
+        const data = await WindguruApi.fetchData(params);
+        console.log(data);
     } catch (error) {
         console.error('Error fetching data:', error);
     }
