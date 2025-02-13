@@ -11,12 +11,35 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
+// Based on GMT-7
+const generateRundef = () => {
+    const now = new Date();
+    const gmtMinus7 = new Date(now.getTime() - 7 * 60 * 60 * 1000);
+    const year = gmtMinus7.getFullYear();
+    const month = String(gmtMinus7.getMonth() + 1).padStart(2, '0'); // Ensure 2-digit format
+    const day = String(gmtMinus7.getDate()).padStart(2, '0'); // Ensure 2-digit format
+    const hour = gmtMinus7.getHours();
+
+    let hourSuffix;
+    if ([8, 9, 10, 11, 12, 13].includes(hour)) {
+        hourSuffix = "06";
+    } else if ([14, 15, 16, 17, 18, 19].includes(hour)) {
+        hourSuffix = "12";
+    } else if ([20, 21, 22, 23, 0, 1].includes(hour)) {
+        hourSuffix = "18";
+    } else {
+        hourSuffix = "24";
+    }
+
+    return `${year}${month}${day}${hourSuffix}x0x78x0x78`;
+};
+
 app.get('/api/windguru', async (req: Request, res: Response) => {
     try {
         const params = {
             q: req.query.q as string || 'forecast',
             id_model: Number(req.query.id_model) || 36,
-            rundef: req.query.rundef as string || '2025021312x0x78x0x78',
+            rundef: req.query.rundef as string || generateRundef(),
             id_spot: Number(req.query.id_spot) || 208276,
             WGCACHEABLE: Number(req.query.WGCACHEABLE) || 21600,
             cachefix: req.query.cachefix as string || '-33.82x18.47x0',
