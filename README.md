@@ -1,5 +1,3 @@
-# weather-station-dashboard-backend
-
 <h1 align="center">
     Weather Station Dashboard Backend
 </h1>
