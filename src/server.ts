@@ -16,7 +16,7 @@ app.get('/api/windguru', async (req: Request, res: Response) => {
         const params = {
             q: req.query.q as string || 'forecast',
             id_model: Number(req.query.id_model) || 36,
-            rundef: req.query.rundef as string || '2025021306x0x78x0x78',
+            rundef: req.query.rundef as string || '2025021312x0x78x0x78',
             id_spot: Number(req.query.id_spot) || 208276,
             WGCACHEABLE: Number(req.query.WGCACHEABLE) || 21600,
             cachefix: req.query.cachefix as string || '-33.82x18.47x0',

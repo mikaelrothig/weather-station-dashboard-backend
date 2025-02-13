@@ -2,7 +2,7 @@
   "name": "weather-station-dashboard-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "server.ts",
   "devDependencies": {
     "@types/axios": "^0.14.4",
     "@types/cors": "^2.8.17",
