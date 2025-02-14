@@ -28,7 +28,7 @@ const generateRundef = () => {
     } else if ([20, 21, 22, 23, 0, 1].includes(hour)) {
         hourSuffix = "18";
     } else {
-        hourSuffix = "24";
+        hourSuffix = "00";
     }
 
     return `${year}${month}${day}${hourSuffix}x0x78x0x78`;
