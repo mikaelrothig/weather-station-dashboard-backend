@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import WindguruApi from './WindguruApi';
+import MacwindAPI from "./MacwindAPI";
 
 dotenv.config();
 
@@ -11,14 +12,14 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-// Based on GMT-7
-const generateRundef = () => {
+// Based on refresh specific timezone
+const generateRundef = (timeZoneOffset: number) => {
     const now = new Date();
-    const gmtMinus7 = new Date(now.getTime() - 7 * 60 * 60 * 1000);
-    const year = gmtMinus7.getFullYear();
-    const month = String(gmtMinus7.getMonth() + 1).padStart(2, '0');
-    const day = String(gmtMinus7.getDate()).padStart(2, '0');
-    const hour = gmtMinus7.getHours();
+    const customTimeZone = new Date(now.getTime() + timeZoneOffset * 60 * 60 * 1000);
+    const year = customTimeZone.getFullYear();
+    const month = String(customTimeZone.getMonth() + 1).padStart(2, '0');
+    const day = String(customTimeZone.getDate()).padStart(2, '0');
+    const hour = customTimeZone.getHours();
 
     let hourSuffix;
     if ([8, 9, 10, 11, 12, 13].includes(hour)) {
@@ -39,7 +40,7 @@ app.get('/api/windguru/wrf-9km', async (req: Request, res: Response) => {
         const params = {
             q: req.query.q as string || 'forecast',
             id_model: Number(req.query.id_model) || 36,
-            rundef: req.query.rundef as string || generateRundef()+'x0x78x0x78',
+            rundef: req.query.rundef as string || generateRundef(-7)+'x0x78x0x78',
             id_spot: Number(req.query.id_spot) || 208276,
             WGCACHEABLE: Number(req.query.WGCACHEABLE) || 21600,
             cachefix: req.query.cachefix as string || '-33.82x18.47x0',
@@ -58,7 +59,7 @@ app.get('/api/windguru/gfs-13km', async (req: Request, res: Response) => {
         const params = {
             q: req.query.q as string || 'forecast',
             id_model: Number(req.query.id_model) || 3,
-            rundef: req.query.rundef as string || generateRundef()+'x0x240x0x240-'+generateRundef()+'x243x384x243x384',
+            rundef: req.query.rundef as string || generateRundef(-6)+'x0x240x0x240-'+generateRundef(-6)+'x243x384x243x384',
             id_spot: Number(req.query.id_spot) || 208276,
             WGCACHEABLE: Number(req.query.WGCACHEABLE) || 21600,
             cachefix: req.query.cachefix as string || '-33.82x18.47x0',
@@ -69,6 +70,34 @@ app.get('/api/windguru/gfs-13km', async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error fetching alternative data:', error);
         res.status(500).json({ error: 'Failed to fetch alternative Windguru data' });
+    }
+});
+
+app.get('/api/macwind/1min', async (req: Request, res: Response) => {
+    try {
+        const params = {
+            frequency: Number(req.query.frequency) || 1,
+        };
+
+        const data = await MacwindAPI.fetchData(params);
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching alternative data:', error);
+        res.status(500).json({ error: 'Failed to fetch alternative Macwind data' });
+    }
+});
+
+app.get('/api/macwind/15min', async (req: Request, res: Response) => {
+    try {
+        const params = {
+            frequency: Number(req.query.frequency) || 15,
+        };
+
+        const data = await MacwindAPI.fetchData(params);
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching alternative data:', error);
+        res.status(500).json({ error: 'Failed to fetch alternative Macwind data' });
     }
 });
 
