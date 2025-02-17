@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import WindguruApi from './WindguruApi';
-import MacwindAPI from "./MacwindAPI";
+import WindguruApi from './api/WindguruApi';
+import MacwindAPI from "./api/MacwindAPI";
 
 dotenv.config();
 
