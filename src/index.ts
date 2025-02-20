@@ -35,7 +35,7 @@ const generateRundef = (timeZoneOffset: number) => {
     return `${year}${month}${day}${hourSuffix}`;
 };
 
-app.get('/api/windguru/wrf-9km', async (req: Request, res: Response) => {
+app.get('/windguru/wrf-9km', async (req: Request, res: Response) => {
     try {
         const params = {
             q: req.query.q as string || 'forecast',
@@ -54,7 +54,7 @@ app.get('/api/windguru/wrf-9km', async (req: Request, res: Response) => {
     }
 });
 
-app.get('/api/windguru/gfs-13km', async (req: Request, res: Response) => {
+app.get('/windguru/gfs-13km', async (req: Request, res: Response) => {
     try {
         const params = {
             q: req.query.q as string || 'forecast',
@@ -73,7 +73,7 @@ app.get('/api/windguru/gfs-13km', async (req: Request, res: Response) => {
     }
 });
 
-app.get('/api/macwind/1min', async (req: Request, res: Response) => {
+app.get('/macwind/1min', async (req: Request, res: Response) => {
     try {
         const params = {
             frequency: Number(req.query.frequency) || 1,
@@ -87,7 +87,7 @@ app.get('/api/macwind/1min', async (req: Request, res: Response) => {
     }
 });
 
-app.get('/api/macwind/15min', async (req: Request, res: Response) => {
+app.get('/macwind/15min', async (req: Request, res: Response) => {
     try {
         const params = {
             frequency: Number(req.query.frequency) || 15,
