@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import WindguruApi from './api/WindguruApi';
-import MacwindAPI from "./api/MacwindAPI";
+import WindguruApi from './WindguruApi';
+import MacwindAPI from "./MacwindAPI";
 
 dotenv.config();
 
@@ -34,6 +34,10 @@ const generateRundef = (timeZoneOffset: number) => {
 
     return `${year}${month}${day}${hourSuffix}`;
 };
+
+app.get("/", (req: Request, res: Response) => {
+    res.send("Express on Vercel");
+});
 
 app.get('/windguru/wrf-9km', async (req: Request, res: Response) => {
     try {
