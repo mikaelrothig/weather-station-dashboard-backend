@@ -36,7 +36,20 @@ const generateRundef = (timeZoneOffset: number) => {
 };
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("Express on Vercel");
+    const routes = [
+        "/windguru/wrf-9km",
+        "/windguru/gfs-13km",
+        "/macwind/1min",
+        "/macwind/15min"
+    ];
+
+    const routesList = routes.map(route => `<li><a href="${route}">${route}</a></li>`).join('');
+    const htmlResponse = `
+        <h1>Kite Beach Forecast Backend</h1>
+        <p>Available routes:</p>
+        <ul>${routesList}</ul>
+    `;
+    res.send(htmlResponse);
 });
 
 app.get('/windguru/wrf-9km', async (req: Request, res: Response) => {
