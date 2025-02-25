@@ -9,6 +9,8 @@ router.get('/', async (req: Request, res: Response) => {
             frequency: Number(req.query.frequency) || 1,
         };
 
+        console.log(`Fetching Macwind 1min data with params:`, params);
+
         const data = await MacwindAPI.fetchData(params);
         res.json(data);
     } catch (error) {

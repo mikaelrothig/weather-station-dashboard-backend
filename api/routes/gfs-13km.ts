@@ -15,6 +15,8 @@ router.get('/', async (req: Request, res: Response) => {
             cachefix: req.query.cachefix as string || '-33.82x18.47x0',
         };
 
+        console.log(`Fetching Windguru GFS13km data with params:`, params);
+
         const data = await WindguruApi.fetchData(params);
         res.json(data);
     } catch (error) {

@@ -59,15 +59,9 @@ const gfsRundefSuffix: string[][] = [
 ];
 
 export const generateWRFRundef = (): string => {
-    const rundef = `${year}${month}${day}${wrfRundefSuffix[hour]}`
-    console.log(rundef);
-
-    return rundef;
+    return `${year}${month}${day}${wrfRundefSuffix[hour]}`;
 };
 
 export const generateGFSRundef = (): string => {
-    const rundef = `${year}${month}${day}${gfsRundefSuffix[hour][0]}-${year}${month}${day}${gfsRundefSuffix[hour][1]}`
-    console.log(rundef);
-
-    return rundef;
+    return `${year}${month}${day}${gfsRundefSuffix[hour][0]}-${year}${month}${day}${gfsRundefSuffix[hour][1]}`;
 };
