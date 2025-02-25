@@ -6,4 +6,6 @@ node_modules/
 
 # jetbrains setting folder
 .idea/
+
+# vercel
 .vercel
