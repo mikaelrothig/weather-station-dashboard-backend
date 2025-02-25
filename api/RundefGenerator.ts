@@ -55,7 +55,7 @@ const gfsRundefSuffix: string[][] = [
     ['12x0x240x0x240','00x243x384x249x384'], //20
     ['12x0x240x0x240','00x243x384x255x384'], //21
     ['12x0x240x0x240','12x243x384x243x384'], //22
-    ['12x0x240x0x240','12x243x384x243x384'] //23
+    ['12x0x240x0x240','12x243x384x243x384']  //23
 ];
 
 export const generateWRFRundef = (): string => {
