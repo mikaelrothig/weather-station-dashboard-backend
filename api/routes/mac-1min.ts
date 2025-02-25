@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import MacwindAPI from "../sources/MacwindAPI";
+import MacwindAPI from "../sources/macwind-api";
 
 const router = Router();
 
