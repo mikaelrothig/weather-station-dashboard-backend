@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import WindguruApi from '../WindguruApi';
-import { generateWRFRundef } from '../RundefGenerator';
+import WindguruApi from '../sources/WindguruApi';
+import { generateWRFRundef } from '../utils/RundefGenerator';
 
 const router = Router();
 
