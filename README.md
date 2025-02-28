@@ -9,7 +9,7 @@
 </p>
 
 ## 🛠 Installation & Set Up
-*To view the data from this backend, please follow the installation and setup in <a href="https://github.com/mikaelrothig/weather-station-dashboard-frontend">Weather Station Dashboard Frontent</a>.*
+*To view the data from this backend, please follow the installation and setup in <a href="https://github.com/mikaelrothig/weather-station-dashboard-frontend">Weather Station Dashboard Frontend</a>.*
 
 1. Install dependencies
 
