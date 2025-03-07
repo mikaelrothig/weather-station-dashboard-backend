@@ -8,7 +8,6 @@ const hour = now.getUTCHours();
 const userUtcOffset = new Date().getTimezoneOffset() / -60;
 const localHour = (hour + userUtcOffset + 24) % 24;
 
-// Check if local time is between 00:00 and 08:00
 if (localHour >= ((userUtcOffset + 24) % 24) && ((localHour + userUtcOffset +24) % 24) < 8) {
     const prevDate = new Date(now);
     prevDate.setUTCDate(prevDate.getUTCDate() - 1);
