@@ -4,19 +4,14 @@ let month = now.getUTCMonth() + 1;
 let day = now.getUTCDate();
 const hour = now.getUTCHours();
 
-// Postpone Date update untill next rundef refresh
-const userUtcOffset = new Date().getTimezoneOffset() / -60;
-const localHour = (hour + userUtcOffset + 24) % 24;
-
-if (localHour >= ((userUtcOffset + 24) % 24) && ((localHour + userUtcOffset +24) % 24) < 8) {
-    const prevDate = new Date(now);
-    prevDate.setUTCDate(prevDate.getUTCDate() - 1);
-    year = prevDate.getUTCFullYear();
-    month = prevDate.getUTCMonth() + 1;
-    day = prevDate.getUTCDate();
+if (hour < 8) {
+    const prevDay = new Date(now);
+    prevDay.setUTCDate(now.getUTCDate() - 1);
+    year = prevDay.getUTCFullYear();
+    month = prevDay.getUTCMonth() + 1;
+    day = prevDay.getUTCDate();
 }
 
-const formattedYear = year;
 const formattedMonth = String(month).padStart(2, '0');
 const formattedDay = String(day).padStart(2, '0');
 
@@ -75,9 +70,9 @@ const gfsRundefSuffix: string[][] = [
 ];
 
 export const generateWRFRundef = (): string => {
-    return `${formattedYear}${formattedMonth}${formattedDay}${wrfRundefSuffix[hour]}`;
+    return `${year}${formattedMonth}${formattedDay}${wrfRundefSuffix[hour]}`;
 };
 
 export const generateGFSRundef = (): string => {
-    return `${formattedYear}${formattedMonth}${formattedDay}${gfsRundefSuffix[hour][0]}-${formattedYear}${formattedMonth}${formattedDay}${gfsRundefSuffix[hour][1]}`;
+    return `${year}${formattedMonth}${formattedDay}${gfsRundefSuffix[hour][0]}-${year}${formattedMonth}${formattedDay}${gfsRundefSuffix[hour][1]}`;
 };
