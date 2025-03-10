@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-
 import home from './routes/home';
 import wrf9kmRoute from './routes/wrf-9km';
 import gfs13kmRoute from './routes/gfs-13km';
