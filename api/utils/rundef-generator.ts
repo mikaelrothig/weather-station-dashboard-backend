@@ -1,20 +1,3 @@
-const now = new Date();
-let year = now.getUTCFullYear();
-let month = now.getUTCMonth() + 1;
-let day = now.getUTCDate();
-const hour = now.getUTCHours();
-
-if (hour < 6) {
-    const prevDay = new Date(now);
-    prevDay.setUTCDate(now.getUTCDate() - 1);
-    year = prevDay.getUTCFullYear();
-    month = prevDay.getUTCMonth() + 1;
-    day = prevDay.getUTCDate();
-}
-
-const formattedMonth = String(month).padStart(2, '0');
-const formattedDay = String(day).padStart(2, '0');
-
 const wrfRundefSuffix: string[] = [
     '12x0x78x0x78', //00
     '18x0x78x0x78', //01
@@ -69,10 +52,35 @@ const gfsRundefSuffix: string[][] = [
     ['18x0x240x0x240','12x243x384x249x384']  //23
 ];
 
+function getDate(updateDay: number): {year: number; month: string; day: string; hour: number} {
+    const now = new Date();
+    let year = now.getUTCFullYear();
+    let month = now.getUTCMonth() + 1;
+    let day = now.getUTCDate();
+    const hour = now.getUTCHours();
+
+    if (hour < updateDay) {
+        const prevDay = new Date(now);
+        prevDay.setUTCDate(now.getUTCDate() - 1);
+        year = prevDay.getUTCFullYear();
+        month = prevDay.getUTCMonth() + 1;
+        day = prevDay.getUTCDate();
+    }
+
+    return {
+        year,
+        month: String(month).padStart(2, '0'),
+        day: String(day).padStart(2, '0'),
+        hour: hour
+    };
+}
+
 export const generateWRFRundef = (): string => {
-    return `${year}${formattedMonth}${formattedDay}${wrfRundefSuffix[hour]}`;
+    const date = getDate(8);
+    return `${date.year}${date.month}${date.day}${wrfRundefSuffix[date.hour]}`;
 };
 
 export const generateGFSRundef = (): string => {
-    return `${year}${formattedMonth}${formattedDay}${gfsRundefSuffix[hour][0]}-${year}${formattedMonth}${formattedDay}${gfsRundefSuffix[hour][1]}`;
+    const date = getDate(6);
+    return `${date.year}${date.month}${date.day}${gfsRundefSuffix[date.hour][0]}-${date.year}${date.month}${date.day}${gfsRundefSuffix[date.hour][1]}`;
 };
