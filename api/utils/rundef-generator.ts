@@ -59,7 +59,7 @@ function getDate(updateDay: number): {year: number; month: string; day: string; 
     let day = now.getUTCDate();
     const hour = now.getUTCHours();
 
-    if (hour < updateDay) {
+    if (hour <= updateDay) {
         const prevDay = new Date(now);
         prevDay.setUTCDate(now.getUTCDate() - 1);
         year = prevDay.getUTCFullYear();
