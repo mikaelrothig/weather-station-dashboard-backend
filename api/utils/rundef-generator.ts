@@ -76,7 +76,7 @@ function getDate(updateDay: number): {year: number; month: string; day: string; 
 }
 
 export const generateWRFRundef = (): string => {
-    const date = getDate(7);
+    const date = getDate(6);
     return `${date.year}${date.month}${date.day}${wrfRundefSuffix[date.hour]}`;
 };
 
