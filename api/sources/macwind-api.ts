@@ -7,7 +7,7 @@ interface MacwindParams {
 class MacwindApi {
     private static readonly BASE_URL = 'https://mac-wind.appspot.com/data/';
 
-    public static async fetchData(params: MacwindParams, retries = 2): Promise<any> {
+    public static async fetchData(params: MacwindParams, retries = 4): Promise<any> {
         for (let attempt = 1; attempt <= retries + 1; attempt++) {
             try {
                 const url = `${this.BASE_URL}${params.frequency}min.json`;

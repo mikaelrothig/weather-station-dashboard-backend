@@ -12,7 +12,7 @@ interface WindguruParams {
 class WindguruApi {
     private static readonly BASE_URL = 'https://www.windguru.net/int/iapi.php';
 
-    public static async fetchData(params: WindguruParams, retries = 2): Promise<any> {
+    public static async fetchData(params: WindguruParams, retries = 4): Promise<any> {
         for (let attempt = 1; attempt <= retries + 1; attempt++) {
             try {
                 const response: AxiosResponse = await axios.get(this.BASE_URL, {
