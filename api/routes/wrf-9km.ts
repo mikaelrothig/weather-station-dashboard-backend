@@ -1,17 +1,17 @@
 import { Router, Request, Response } from 'express';
 import WindguruApi from '../sources/windguru-api';
 import { generateWRFRundef } from '../utils/rundef-generator';
-import { LOCATION_CONFIG } from "../config/locations";
+import { SPOT_CONFIG } from "../config/spots";
 
 const router = Router();
 
-router.get('/:location', async (req: Request, res: Response): Promise<void> => {
+router.get('/:spot', async (req: Request, res: Response): Promise<void> => {
     try {
-        const { location } = req.params;
-        const config = LOCATION_CONFIG[location.toLowerCase()];
+        const { spot } = req.params;
+        const config = SPOT_CONFIG[spot.toLowerCase()];
 
         if (!config) {
-            res.status(400).json({ error: 'Invalid location specified' });
+            res.status(400).json({ error: 'Invalid spot specified' });
             return;
         }
 
@@ -24,7 +24,7 @@ router.get('/:location', async (req: Request, res: Response): Promise<void> => {
             cachefix: config.cachefix,
         };
 
-        console.log(`Fetching Windguru WRF9km data for ${location} with params:`, params, `\n`);
+        console.log(`Fetching Windguru WRF9km data for ${spot} with params:`, params, `\n`);
 
         const data = await WindguruApi.fetchData(params);
         res.json(data);
