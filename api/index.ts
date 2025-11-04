@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import wrf9kmRoute from './routes/wrf-9km';
 import gfs13kmRoute from './routes/gfs-13km';
+import gfsw13kmRoute from './routes/gfsw-13km';
 import mac1min from "./routes/mac-1min";
 import mac15min from "./routes/mac-15min";
 
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use('/windguru/wrf-9km', wrf9kmRoute);
 app.use('/windguru/gfs-13km', gfs13kmRoute);
+app.use('/windguru/gfsw-13km', gfsw13kmRoute);
 app.use('/macwind/1min', mac1min);
 app.use('/macwind/15min', mac15min);
 
