@@ -8,7 +8,7 @@ const router = Router();
 router.get('/:spot', async (req: Request, res: Response): Promise<void> => {
     try {
         const { spot } = req.params;
-        const config = SPOT_CONFIG[spot.toLowerCase()];
+        const config = SPOT_CONFIG[spot.replace(/\s+/g, '').toLowerCase()];
 
         if (!config) {
             res.status(400).json({ error: 'Invalid spot specified' });
