@@ -5,7 +5,7 @@
     Weather Station Dashboard Backend
 </h1>
 <p align="center">
-    Backend for a Kite Beach, Cape Town weather app that aggregates data from multiple sources.
+    Backend for a kitesurf forecast webapp that aggregates data from multiple sources.
 </p>
 
 ## 🛠 Installation & Set Up
