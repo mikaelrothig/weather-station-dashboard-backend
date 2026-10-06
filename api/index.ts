@@ -1,11 +1,11 @@
-import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import wrf9kmRoute from './routes/wrf-9km';
-import gfs13kmRoute from './routes/gfs-13km';
-import gfsw13kmRoute from './routes/gfsw-13km';
-import mac1min from "./routes/mac-1min";
-import mac15min from "./routes/mac-15min";
+import express from 'express';
+import { cacheFor } from '../src/middleware/cache';
+import { errorHandler, notFound } from '../src/middleware/errors';
+import { forecastRoute } from '../src/routes/forecast';
+import { liveWindRoute } from '../src/routes/live-wind';
+import { spotRoute } from '../src/routes/spot';
 
 dotenv.config();
 
@@ -13,15 +13,17 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(express.static('./public'));
-
 app.use(cors());
-app.use(express.json());
 
-app.use('/windguru/wrf-9km', wrf9kmRoute);
-app.use('/windguru/gfs-13km', gfs13kmRoute);
-app.use('/windguru/gfsw-13km', gfsw13kmRoute);
-app.use('/macwind/1min', mac1min);
-app.use('/macwind/15min', mac15min);
+// Forecasts are kept until their next model run is due (routes/forecast.ts); spot info changes about daily;
+// live readings every minute. If a provider is down, the last good copy is served for up to a day (an hour for live).
+const HOUR = 3600;
+app.use('/forecast', cacheFor({ fresh: 600, staleWhileRevalidate: 1800, staleIfError: 24 * HOUR }), forecastRoute);
+app.use('/spots', cacheFor({ fresh: 3 * HOUR, staleWhileRevalidate: 1800, staleIfError: 24 * HOUR }), spotRoute);
+app.use('/live', cacheFor({ fresh: 60, staleWhileRevalidate: 180, staleIfError: HOUR }), liveWindRoute);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
