@@ -20,7 +20,7 @@ app.use(cors());
 const HOUR = 3600;
 app.use('/forecast', cacheFor({ fresh: 600, staleWhileRevalidate: 1800, staleIfError: 24 * HOUR }), forecastRoute);
 app.use('/spots', cacheFor({ fresh: 3 * HOUR, staleWhileRevalidate: 1800, staleIfError: 24 * HOUR }), spotRoute);
-app.use('/live', cacheFor({ fresh: 60, staleWhileRevalidate: 180, staleIfError: HOUR }), liveWindRoute);
+app.use('/live', cacheFor({ fresh: 60, staleWhileRevalidate: 30, staleIfError: HOUR }), liveWindRoute);
 
 app.use(notFound);
 app.use(errorHandler);
