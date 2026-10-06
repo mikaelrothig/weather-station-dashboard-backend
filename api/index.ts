@@ -1,11 +1,11 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import { cacheFor } from './middleware/cache';
-import { errorHandler, notFound } from './middleware/errors';
-import { forecastRoute } from './routes/forecast';
-import { liveWindRoute } from './routes/live-wind';
-import { spotRoute } from './routes/spot';
+import { cacheFor } from '../src/middleware/cache';
+import { errorHandler, notFound } from '../src/middleware/errors';
+import { forecastRoute } from '../src/routes/forecast';
+import { liveWindRoute } from '../src/routes/live-wind';
+import { spotRoute } from '../src/routes/spot';
 
 dotenv.config();
 

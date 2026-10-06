@@ -25,7 +25,7 @@
 
 ## 🔌 API
 
-All responses use one provider-neutral format, defined in `api/providers/types.ts`: knots, degrees the wind or swell comes from, °C, metres, and ISO 8601 times.
+All responses use one provider-neutral format, defined in `src/providers/types.ts`: knots, degrees the wind or swell comes from, °C, metres, and ISO 8601 times.
 
 | Route | Returns |
 |---|---|
@@ -39,7 +39,8 @@ All responses use one provider-neutral format, defined in `api/providers/types.t
 
 ```
 api/
-├── index.ts              Express app: middleware and route mounting
+└── index.ts              Express app: middleware and route mounting (the only Vercel function)
+src/
 ├── config/spots.ts       Every spot: region, tides, and each provider's id for it
 ├── routes/               Thin HTTP handlers that only talk to the provider interfaces
 ├── providers/
@@ -51,10 +52,12 @@ api/
 └── lib/http.ts           Provider calls: timeouts, retries, shared concurrent calls, 30 s failure cooldown
 ```
 
+Vercel turns every file under `api/` into its own serverless function, and the Hobby plan allows 12. Keep `api/` to the single entry point and put everything else in `src/`.
+
 ### Switching data providers
 
-1. Add an adapter under `api/providers/` that implements `ForecastProvider` or `LiveWindProvider`, mapping the provider's data to the types in `types.ts`.
-2. Add the spots' identifiers for it to `api/config/spots.ts`, next to the `windguru` block.
-3. Select it in `api/providers/index.ts`.
+1. Add an adapter under `src/providers/` that implements `ForecastProvider` or `LiveWindProvider`, mapping the provider's data to the types in `types.ts`.
+2. Add the spots' identifiers for it to `src/config/spots.ts`, next to the `windguru` block.
+3. Select it in `src/providers/index.ts`.
 
 Routes and the frontend don't change.
