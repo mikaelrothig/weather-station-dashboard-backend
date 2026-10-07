@@ -6,7 +6,7 @@ import type { Spot } from '../config/spots';
  * Units: knots, degrees the wind or swell comes from, °C, metres, seconds. Times are ISO 8601.
  */
 
-/** hires: the region's high-resolution model · global: the long-range model */
+/** hires: the high-resolution regional model · global: the long-range model */
 export type ForecastKind = 'hires' | 'global';
 
 export interface ModelRun {
@@ -90,4 +90,27 @@ export interface LiveReading {
 export interface LiveWindProvider {
     /** Recent readings, newest first */
     getReadings(interval: LiveInterval): Promise<LiveReading[]>;
+}
+
+/** One spot's wind for the home page: hourly from the start of today to the end of tomorrow, spot time */
+export interface SpotSummary {
+    /** The spot's URL name, e.g. "mistycliffs" */
+    spot: string;
+    /** Name of the high-resolution model the hours come from */
+    model: string;
+    /** Spot-local clock times, "HH:MM" */
+    sunrise: string;
+    sunset: string;
+    hours: ForecastHour[];
+}
+
+/** A spot whose forecast couldn't be loaded; the rest of the summary still comes back */
+export interface SpotSummaryError {
+    spot: string;
+    error: string;
+}
+
+/** GET /summary: every spot at once, so the home page needs one small request instead of one forecast per spot */
+export interface Summary {
+    spots: (SpotSummary | SpotSummaryError)[];
 }
