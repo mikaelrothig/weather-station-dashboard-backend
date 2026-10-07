@@ -110,8 +110,8 @@ export const takeFromDailyBudget = async (name: string, limit: number): Promise<
     let used: number;
     try {
         used = await redis.incr(key);
-        // Two days, so the counter outlives its day in any timezone and then cleans itself up
-        if (used === 1) await redis.expire(key, 2 * 24 * 3600);
+        // Kept 30 days, so each day's count stays readable as a month of history, then cleans itself up
+        if (used === 1) await redis.expire(key, 30 * 24 * 3600);
     } catch (error) {
         markDown(error);
         if (required) throw unavailable('budget check failed');
