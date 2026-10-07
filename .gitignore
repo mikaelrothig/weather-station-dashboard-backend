@@ -4,8 +4,6 @@ node_modules/
 # macOS-specific files
 .DS_Store
 
-# jetbrains setting folder
-.idea/
-
-# vercel
-.vercel
+# local environment (store tokens etc.)
+.env
+.env.*
