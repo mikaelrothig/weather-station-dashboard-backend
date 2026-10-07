@@ -6,6 +6,7 @@ import { errorHandler, notFound } from '../src/middleware/errors';
 import { forecastRoute } from '../src/routes/forecast';
 import { liveWindRoute } from '../src/routes/live-wind';
 import { spotRoute } from '../src/routes/spot';
+import { summaryRoute } from '../src/routes/summary';
 
 dotenv.config();
 
@@ -19,8 +20,10 @@ app.use(cors());
 // live readings every minute. If a provider is down, the last good copy is served for up to a day (an hour for live).
 const HOUR = 3600;
 app.use('/forecast', cacheFor({ fresh: 600, staleWhileRevalidate: 1800, staleIfError: 24 * HOUR }), forecastRoute);
-app.use('/spots', cacheFor({ fresh: 3 * HOUR, staleWhileRevalidate: 1800, staleIfError: 24 * HOUR }), spotRoute);
+app.use('/spots', cacheFor({ fresh: 12 * HOUR, staleWhileRevalidate: 1800, staleIfError: 24 * HOUR }), spotRoute);
 app.use('/live', cacheFor({ fresh: 60, staleWhileRevalidate: 30, staleIfError: HOUR }), liveWindRoute);
+// Every spot at once for the home page; its freshness follows the forecasts it's built from (routes/summary.ts)
+app.use('/summary', cacheFor({ fresh: 600, staleWhileRevalidate: 1800, staleIfError: 24 * HOUR }), summaryRoute);
 
 app.use(notFound);
 app.use(errorHandler);

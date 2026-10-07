@@ -15,14 +15,16 @@ const CHECK_EVERY = 10 * MINUTE;
 const LONGEST = 6 * 60 * MINUTE;
 
 /**
- * A run doesn't change until the next one is published, so cache it until then. This keeps calls to the
+ * A run doesn't change until the next one is published, so it can be cached until then. This keeps calls to the
  * provider to a few per spot per run (about 4 a day) instead of one every 10 minutes.
  */
-const cacheUntilNextRun = (res: Response, model: ModelRun) => {
+export const secondsUntilNextRun = (model: ModelRun): number => {
     const secondsUntilDue = model.nextUpdateAt ? (Date.parse(model.nextUpdateAt) - Date.now()) / 1000 : NaN;
     const seconds = secondsUntilDue + PUBLISH_MARGIN;
-    setFreshFor(res, Number.isFinite(seconds) && seconds > CHECK_EVERY ? Math.min(seconds, LONGEST) : CHECK_EVERY);
+    return Number.isFinite(seconds) && seconds > CHECK_EVERY ? Math.min(seconds, LONGEST) : CHECK_EVERY;
 };
+
+const cacheUntilNextRun = (res: Response, model: ModelRun) => setFreshFor(res, secondsUntilNextRun(model));
 
 /** GET /:spot/hires, /:spot/global and /:spot/waves */
 export const forecastRoute = Router()
