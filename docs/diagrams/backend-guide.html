@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: Geist, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, monospace;
+    --canvas: #09090b; --surface: #111113;
+    --strong: #fafafa; --text: #d4d4d8; --muted: #a1a1aa; --faint: #71717a;
+    --hairline: rgba(255,255,255,0.08);
+    --accent: #e11d48; --accent-text: #fb7185;
+    --sky: #38bdf8; --amber: #fbbf24; --green: #4ade80; --violet: #a78bfa;
+    --glow-a: rgba(225,29,72,0.16); --glow-b: rgba(56,189,248,0.09);
+    --grid: rgba(255,255,255,0.025);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; font-family: var(--font); -webkit-font-smoothing: antialiased; color: var(--text); }
+  .slide { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--canvas);
+    background-image: radial-gradient(900px 600px at 8% 0%, var(--glow-a), transparent 60%), radial-gradient(900px 700px at 100% 100%, var(--glow-b), transparent 60%); }
+  .slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 64px 64px; mask-image: radial-gradient(1200px 800px at 50% 40%, black, transparent 75%); }
+  .slide > :not(template) { z-index: 1; }
+
+  .header { position: absolute; left: 120px; right: 120px; top: 64px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 600; color: var(--strong); margin-bottom: 18px; }
+  .logo { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); display: grid; place-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.2); }
+  .logo svg { width: 18px; height: 18px; }
+  h1 { font-size: 54px; line-height: 1; font-weight: 600; letter-spacing: -0.035em; color: var(--strong); }
+  h1 em { font-style: normal; color: var(--accent); }
+  .legend { display: flex; gap: 22px; font-size: 15px; color: var(--muted); padding-bottom: 6px; }
+  .legend span { display: flex; align-items: center; gap: 8px; }
+  .legend code { font-family: var(--mono); font-size: 14px; color: var(--text); }
+
+  .label { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+
+  .card { position: relative; border-radius: 18px; background: var(--surface); padding: 18px 20px;
+    box-shadow: 0 0 0 1px var(--hairline), 0 24px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+    display: flex; flex-direction: column; gap: 10px; }
+  .top { display: flex; align-items: center; gap: 10px; }
+  .num { flex: none; width: 28px; height: 28px; border-radius: 9px; background: rgba(225,29,72,0.14); box-shadow: inset 0 0 0 1px rgba(225,29,72,0.3); display: grid; place-items: center; font-size: 14px; font-weight: 700; color: var(--accent-text); }
+  .card h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--strong); }
+  .file { font-family: var(--mono); font-size: 13px; color: var(--faint); margin-top: -4px; }
+  .list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .list li { font-size: 15px; line-height: 1.38; color: var(--muted); padding-left: 14px; position: relative; }
+  .list li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--faint); }
+  .list li b { color: var(--strong); font-weight: 600; }
+  code, .c { font-family: var(--mono); font-size: 13.5px; color: var(--text); background: rgba(255,255,255,0.05); padding: 1px 5px; border-radius: 5px; }
+
+  /* request path */
+  .stack { position: absolute; left: 120px; top: 206px; width: 1680px; display: flex; flex-direction: column; gap: 30px; }
+  .flow { position: relative; display: grid;
+    grid-template-columns: 280px 320px 500px 300px 200px; column-gap: 20px; }
+  .flow > .card:not(:last-child)::after { content: ""; position: absolute; left: 100%; top: 32px; width: 20px; height: 2px; background: var(--accent); opacity: 0.7; }
+  .flow > .card:not(:last-child)::before { content: ""; position: absolute; left: calc(100% + 13px); top: 28px; border: 5px solid transparent; border-left: 7px solid var(--accent-text); }
+
+  .substeps { display: flex; flex-direction: column; gap: 8px; }
+  .sub { display: grid; grid-template-columns: 22px 1fr; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.03); box-shadow: inset 0 0 0 1px var(--hairline); }
+  .sub .l { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--sky); padding-top: 1px; }
+  .sub p { font-size: 15px; line-height: 1.38; color: var(--muted); }
+  .sub p b { color: var(--strong); font-weight: 600; }
+  .alt { font-size: 14px; color: var(--muted); padding: 2px 2px 0; }
+  .alt b { color: var(--strong); font-weight: 600; }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); margin-right: 6px; vertical-align: 1px; }
+
+  .srcs { display: flex; flex-direction: column; gap: 10px; }
+  .src { padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.03); box-shadow: inset 0 0 0 1px var(--hairline); }
+  .src b { display: block; font-size: 15px; color: var(--strong); font-weight: 600; }
+  .src span:not(.dot) { display: block; margin-top: 3px; font-size: 13px; line-height: 1.35; color: var(--muted); }
+
+  /* response path */
+  .back { position: relative; width: 1680px; display: flex; align-items: center; gap: 12px; }
+  .back .line { position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: linear-gradient(270deg, rgba(74,222,128,0.12), var(--green)); z-index: -1; }
+  .back .line::before { content: ""; position: absolute; left: -9px; top: -5px; border: 6px solid transparent; border-right: 9px solid var(--green); }
+  .chip { padding: 7px 13px; border-radius: 999px; background: var(--canvas); box-shadow: inset 0 0 0 1px var(--hairline); font-size: 15px; color: var(--text); white-space: nowrap; }
+  .chip b { color: var(--strong); font-weight: 600; }
+  .chip.ok { color: var(--green); box-shadow: inset 0 0 0 1px rgba(74,222,128,0.35); font-weight: 600; margin-left: 18px; }
+  .chip.err b { color: var(--amber); }
+
+  /* concepts */
+  .concepts { position: relative; display: grid; grid-template-columns: 600px 1fr 1fr; column-gap: 20px; }
+  .snippet { font-family: var(--mono); font-size: 13px; line-height: 1.55; color: var(--muted); padding: 10px 12px; border-radius: 10px; background: rgba(0,0,0,0.35); box-shadow: inset 0 0 0 1px var(--hairline); white-space: pre; }
+  .snippet .k { color: var(--accent-text); } .snippet .s { color: var(--green); } .snippet .n { color: var(--amber); }
+
+  /* recipes */
+  .recipes { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 20px; }
+  .recipe { border-radius: 14px; padding: 14px 16px; background: rgba(255,255,255,0.025); box-shadow: inset 0 0 0 1px var(--hairline); display: flex; flex-direction: column; gap: 6px; }
+  .recipe h4 { font-size: 16px; font-weight: 600; color: var(--strong); }
+  .recipe p { font-size: 14px; line-height: 1.45; color: var(--muted); }
+</style>
+</head>
+<body>
+<template id="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg></template>
+
+<section class="slide" id="backend">
+  <div class="header">
+    <div>
+      <div class="brand"><span class="logo" data-logo></span>Kite Beach Forecast · backend guide</div>
+      <h1>Follow one request: <em>GET /forecast/blouberg/hires</em></h1>
+    </div>
+    <div class="legend"><span><code>npm run dev</code> → localhost:4000</span></div>
+  </div>
+
+  <!-- 1–5: the request path -->
+  <div class="stack">
+  <div class="flow">
+    <div class="card">
+      <div class="top"><span class="num">1</span><h3>Express app</h3></div>
+      <span class="file">api/index.ts</span>
+      <ul class="list">
+        <li>The only Vercel function: every URL is rewritten to it</li>
+        <li>Mounts <code>/forecast</code> <code>/spots</code> <code>/live</code> <code>/summary</code></li>
+        <li><code>cacheFor()</code> adds a Cache-Control header to each response</li>
+        <li><code>notFound</code> and <code>errorHandler</code> run last</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="num">2</span><h3>Route</h3></div>
+      <span class="file">src/routes/forecast.ts</span>
+      <ul class="list">
+        <li><code>findSpot("blouberg")</code> loads the spot's config, or throws a 404</li>
+        <li>Calls <code>forecastProvider</code>, never Windguru directly</li>
+        <li><code>cacheUntilNextRun()</code> keeps the response until the next model run</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="num">3</span><h3>Provider adapter</h3></div>
+      <span class="file">src/providers/windguru/</span>
+      <div class="substeps">
+        <div class="sub"><span class="l">a</span><p><b>Which run?</b> <code>latestRun()</code> asks only when the schedule says one is due, then every 10 min until it lands</p></div>
+        <div class="sub"><span class="l">b</span><p><b>Fetch it once.</b> <code>storedRun()</code> reads the run from the shared store, or fetches and stores it</p></div>
+        <div class="sub"><span class="l">c</span><p><b>Translate.</b> <code>map.ts</code> turns Windguru's arrays into the shared format</p></div>
+      </div>
+      <p class="alt"><span class="dot" style="--c:var(--accent-text)"></span><b>Live wind</b> takes the same path through <code>macwind.ts</code>: one GET, station times to UTC</p>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="num">4</span><h3>HTTP client</h3></div>
+      <span class="file">src/lib/http.ts · fetchJson()</span>
+      <ul class="list">
+        <li><b>Shares</b> one call between identical requests in flight</li>
+        <li><b>Retries</b> network and 5xx errors once, 10 s timeout</li>
+        <li>Never retries <b>4xx</b> (blocked or rate limited)</li>
+        <li><b>Pauses a failing URL</b> 30 s, growing to 15 min</li>
+        <li><b>Circuit breaker:</b> Windguru blocked → no calls for 1 h</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="top"><span class="num">5</span><h3>Sources</h3></div>
+      <div class="srcs">
+        <div class="src"><b><span class="dot" style="--c:var(--sky)"></span>Windguru</b><span>Needs a windguru.cz Referer header</span></div>
+        <div class="src"><b><span class="dot" style="--c:var(--accent-text)"></span>MAC Wind</b><span>Blouberg station JSON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- response -->
+  <div class="back">
+    <span class="line"></span>
+    <span class="chip ok">200 · JSON in the shared format</span>
+    <span class="chip err"><b>HttpError</b> → its status, e.g. 404 unknown spot</span>
+    <span class="chip err"><b>Anything else</b> → 502, never cached</span>
+  </div>
+
+  <!-- concepts -->
+  <div class="concepts">
+    <div class="card">
+      <div class="top"><h3>Spot config</h3></div>
+      <span class="file">src/config/spots.ts</span>
+      <div class="snippet">blouberg: { windguru: { id: <span class="n">208276</span>,
+  cachefix: <span class="s">'-33.82x18.47x0'</span>,
+  waveCachefix: <span class="s">'-33.854x18.147x0'</span> } }</div>
+      <ul class="list">
+        <li>6 Western Cape spots, all on <b>WRF 9 km Southern Africa</b></li>
+        <li>The first spot answers run lookups; no <code>waveCachefix</code> means <code>/waves</code> 404s</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="top"><h3>Shared format</h3></div>
+      <span class="file">src/providers/types.ts</span>
+      <ul class="list">
+        <li>Responses: <code>Forecast</code> <code>WaveForecast</code> <code>SpotInfo</code> <code>LiveReading</code> <code>Summary</code></li>
+        <li>Units: knots · degrees from · °C · metres · UTC</li>
+        <li>Contracts: <code>ForecastProvider</code> and <code>LiveWindProvider</code>; <code>providers/index.ts</code> picks which adapter implements them</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="top"><h3>Cache timing</h3></div>
+      <span class="file">api/index.ts · src/middleware/cache.ts</span>
+      <ul class="list">
+        <li><b>Forecasts:</b> until the next run is due + 5 min (10 min to 6 h)</li>
+        <li><b>Summary:</b> until the first spot's next run, built from the cached forecasts</li>
+        <li><b>Spot info:</b> 12 h · <b>Live:</b> 60 s</li>
+        <li>Provider down: the CDN keeps the last good copy for <b>24 h</b> (live <b>1 h</b>)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- recipes -->
+  <div class="recipes">
+    <div class="recipe"><h4>Add a spot</h4><p>One entry in <code>spots.ts</code>: Windguru id and grid points. Add it to the frontend's <code>spots.ts</code> too; its page is generated.</p></div>
+    <div class="recipe"><h4>Switch provider</h4><p>Write an adapter that implements the contract, add its ids in <code>spots.ts</code>, select it in <code>providers/index.ts</code>.</p></div>
+    <div class="recipe"><h4>Terms: rundef</h4><p>Names a model run: start date and hour, then the hours it covers. <code>2026100512x0x78x0x78</code></p></div>
+    <div class="recipe"><h4>Terms: cachefix</h4><p>The model grid point to read: <code>lat x lon x altitude</code>. Waves use a separate point out at sea.</p></div>
+  </div>
+  </div>
+</section>
+
+<script>
+  const logo = document.getElementById("logo").innerHTML;
+  document.querySelectorAll("[data-logo]").forEach((el) => (el.innerHTML = logo));
+</script>
+</body>
+</html>

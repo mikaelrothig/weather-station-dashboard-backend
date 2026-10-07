@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: Geist, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, monospace;
+    --canvas: #09090b; --surface: #111113;
+    --strong: #fafafa; --text: #d4d4d8; --muted: #a1a1aa; --faint: #71717a;
+    --hairline: rgba(255,255,255,0.08);
+    --accent: #e11d48; --accent-text: #fb7185;
+    --live: #fb7185; --fc: #38bdf8; --spot: #fbbf24; --sum: #a78bfa; --green: #4ade80;
+    --glow-a: rgba(225,29,72,0.16); --glow-b: rgba(56,189,248,0.09);
+    --grid: rgba(255,255,255,0.025);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; font-family: var(--font); -webkit-font-smoothing: antialiased; color: var(--text); }
+  .slide { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--canvas);
+    background-image: radial-gradient(900px 600px at 8% 0%, var(--glow-a), transparent 60%), radial-gradient(900px 700px at 100% 100%, var(--glow-b), transparent 60%); }
+  .slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 64px 64px; mask-image: radial-gradient(1200px 800px at 50% 40%, black, transparent 75%); }
+  .slide > :not(template) { z-index: 1; }
+
+  .header { position: absolute; left: 120px; right: 120px; top: 64px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 600; color: var(--strong); margin-bottom: 18px; }
+  .logo { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); display: grid; place-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.2); }
+  .logo svg { width: 18px; height: 18px; }
+  h1 { font-size: 54px; line-height: 1; font-weight: 600; letter-spacing: -0.035em; color: var(--strong); }
+  h1 em { font-style: normal; color: var(--accent); }
+  .legend { display: flex; gap: 18px; font-size: 15px; color: var(--muted); padding-bottom: 6px; }
+  .legend span { display: flex; align-items: center; gap: 8px; }
+  .legend i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+
+  code { font-family: var(--mono); font-size: 13.5px; color: var(--text); background: rgba(255,255,255,0.05); padding: 1px 5px; border-radius: 5px; }
+
+  .stack { position: absolute; left: 120px; top: 212px; width: 1680px; display: flex; flex-direction: column; gap: 26px; }
+  .board { display: grid; grid-template-columns: 300px 300px 400px 320px 240px; column-gap: 30px;
+    grid-template-rows: auto repeat(4, 124px); row-gap: 14px; }
+
+  .stage { display: flex; flex-direction: column; gap: 6px; padding-bottom: 2px; }
+  .stage .top { display: flex; align-items: center; gap: 10px; }
+  .num { flex: none; width: 28px; height: 28px; border-radius: 9px; background: rgba(225,29,72,0.14); box-shadow: inset 0 0 0 1px rgba(225,29,72,0.3); display: grid; place-items: center; font-size: 14px; font-weight: 700; color: var(--accent-text); }
+  .num.clock { background: rgba(255,255,255,0.05); box-shadow: inset 0 0 0 1px var(--hairline); }
+  .num.clock svg { width: 15px; height: 15px; stroke: var(--muted); }
+  .stage h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--strong); }
+  .file { font-family: var(--mono); font-size: 13px; color: var(--faint); }
+
+  .card { position: relative; border-radius: 18px; background: var(--surface); padding: 16px 20px;
+    box-shadow: 0 0 0 1px var(--hairline), 0 24px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+    display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  .lane { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c); }
+  .lane i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+  .t { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--strong); }
+  .s { font-size: 15px; line-height: 1.4; color: var(--muted); }
+  .big { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; color: var(--strong); font-variant-numeric: tabular-nums; }
+  .big small { font-size: 17px; color: var(--muted); font-weight: 500; }
+
+  .edge::before { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c); }
+  .out::after { content: ""; position: absolute; top: 50%; left: 100%; width: 30px; height: 2px; background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 35%, transparent)); }
+
+  .backend { grid-row: 2 / span 4; grid-column: 2; justify-content: center; gap: 18px; padding: 24px; }
+  .backend .list { gap: 14px; }
+  .backend .t { font-size: 19px; }
+  .list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .list li { font-size: 15px; line-height: 1.38; color: var(--muted); padding-left: 14px; position: relative; }
+  .list li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--faint); }
+  .list li b { color: var(--strong); font-weight: 600; }
+  .stub { position: absolute; left: 100%; width: 30px; height: 2px; }
+
+  .delay { background: transparent; box-shadow: none; padding-left: 14px; }
+  .delay .big { font-size: 40px; color: var(--c); }
+
+  .back { position: relative; display: flex; align-items: center; gap: 12px; }
+  .back .line { position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: linear-gradient(90deg, rgba(74,222,128,0.12), rgba(74,222,128,0.6)); z-index: -1; }
+  .chip { padding: 7px 13px; border-radius: 999px; background: var(--canvas); box-shadow: inset 0 0 0 1px var(--hairline); font-size: 15px; color: var(--text); white-space: nowrap; }
+  .chip b { color: var(--strong); font-weight: 600; }
+  .chip.ok { color: var(--green); box-shadow: inset 0 0 0 1px rgba(74,222,128,0.35); font-weight: 600; }
+  .chip.warn b { color: var(--spot); }
+
+  .recipes { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 20px; }
+  .recipe { border-radius: 14px; padding: 14px 16px; background: rgba(255,255,255,0.025); box-shadow: inset 0 0 0 1px var(--hairline); display: flex; flex-direction: column; gap: 6px; }
+  .recipe h4 { font-size: 16px; font-weight: 600; color: var(--strong); }
+  .recipe p { font-size: 14px; line-height: 1.45; color: var(--muted); }
+</style>
+</head>
+<body>
+<template id="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg></template>
+
+<section class="slide" id="pipeline">
+  <div class="header">
+    <div>
+      <div class="brand"><span class="logo" data-logo></span>Kite Beach Forecast · data pipeline guide</div>
+      <h1>How old is the data? <em>Caches &amp; delays</em></h1>
+    </div>
+    <div class="legend">
+      <span style="--c:var(--live)"><i></i>Live wind</span>
+      <span style="--c:var(--fc)"><i></i>Forecast</span>
+      <span style="--c:var(--spot)"><i></i>Spot info</span>
+      <span style="--c:var(--sum)"><i></i>Home summary</span>
+    </div>
+  </div>
+
+  <div class="stack">
+  <div class="board">
+    <div class="stage"><div class="top"><span class="num">1</span><h3>Source</h3></div><span class="file">src/providers/</span></div>
+    <div class="stage"><div class="top"><span class="num">2</span><h3>Backend</h3></div><span class="file">src/lib/http.ts · store.ts</span></div>
+    <div class="stage"><div class="top"><span class="num">3</span><h3>Vercel CDN cache</h3></div><span class="file">api/index.ts · src/routes/forecast.ts</span></div>
+    <div class="stage"><div class="top"><span class="num">4</span><h3>Browser</h3></div><span class="file">frontend: src/hooks/useLiveWind.ts</span></div>
+    <div class="stage"><div class="top"><span class="num clock"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span><h3>Typical delay</h3></div><span class="file">source → screen</span></div>
+
+    <!-- Live wind -->
+    <div class="card out" style="--c:var(--live); grid-row:2; grid-column:1;">
+      <span class="lane"><i></i>Live wind</span><span class="t">MAC Wind</span><span class="s">Blouberg station · a reading every 1 or 15 min</span>
+    </div>
+
+    <div class="card backend">
+      <span class="t">Shared store</span>
+      <ul class="list">
+        <li><b>Each run</b> fetched once, kept in Redis <b>3 days</b></li>
+        <li><b>Run lookup</b>: only when a run is due, every <b>10 min</b></li>
+        <li><b>1 retry</b>; a failing URL pauses <b>30 s → 15 min</b></li>
+        <li>Blocked by Windguru: <b>all calls stop 1 h</b></li>
+        <li>Summary: <b>4 spots at once</b></li>
+      </ul>
+      <span class="stub" style="top:62px; background:var(--live);"></span>
+      <span class="stub" style="top:200px; background:var(--fc);"></span>
+      <span class="stub" style="top:338px; background:var(--spot);"></span>
+      <span class="stub" style="top:476px; background:var(--sum);"></span>
+    </div>
+
+    <div class="card out" style="--c:var(--live); grid-row:2; grid-column:3;">
+      <span class="big">60 s</span><span class="s">then up to 30 s stale while refreshing</span>
+    </div>
+    <div class="card out" style="--c:var(--live); grid-row:2; grid-column:4;">
+      <span class="t">Polls every 1 or 5 min</span><span class="s">1-min or 15-min view, while the tab is visible</span>
+    </div>
+    <div class="card delay" style="--c:var(--live); grid-row:2; grid-column:5;">
+      <span class="big">1–2 min</span><span class="s">on the 1-min view</span>
+    </div>
+
+    <!-- Forecast -->
+    <div class="card out" style="--c:var(--fc); grid-row:3; grid-column:1;">
+      <span class="lane"><i></i>Forecast</span><span class="t">Windguru</span><span class="s">WRF · GFS · GFS-Wave · ~4 runs a day</span>
+    </div>
+    <div class="card out" style="--c:var(--fc); grid-row:3; grid-column:3;">
+      <span class="big">Next run <small>+ 5 min</small></span><span class="s">10 min to 6 h, then up to 30 min stale</span>
+    </div>
+    <div class="card out" style="--c:var(--fc); grid-row:3; grid-column:4;">
+      <span class="t">Once on page load</span><span class="s">reload to pick up a newer run</span>
+    </div>
+    <div class="card delay" style="--c:var(--fc); grid-row:3; grid-column:5;">
+      <span class="big">~5–15 min</span><span class="s">after Windguru publishes</span>
+    </div>
+
+    <!-- Spot info -->
+    <div class="card out" style="--c:var(--spot); grid-row:4; grid-column:1;">
+      <span class="lane"><i></i>Spot info</span><span class="t">Windguru</span><span class="s">Sea temp · daylight · tide constants</span>
+    </div>
+    <div class="card out" style="--c:var(--spot); grid-row:4; grid-column:3;">
+      <span class="big">12 h</span><span class="s">then up to 30 min stale</span>
+    </div>
+    <div class="card out" style="--c:var(--spot); grid-row:4; grid-column:4;">
+      <span class="t">Once on page load</span><span class="s">tide curve calculated in the browser</span>
+    </div>
+    <div class="card delay" style="--c:var(--spot); grid-row:4; grid-column:5;">
+      <span class="big">≤ 12.5 h</span><span class="s">changes about daily</span>
+    </div>
+
+    <!-- Home summary -->
+    <div class="card out" style="--c:var(--sum); grid-row:5; grid-column:1;">
+      <span class="lane"><i></i>Home summary</span><span class="t">Shared store</span><span class="s">Each spot's <code>hires</code> run, read through the provider</span>
+    </div>
+    <div class="card out" style="--c:var(--sum); grid-row:5; grid-column:3;">
+      <span class="big">First next run <small>+ 5 min</small></span><span class="s">10 min while a spot is missing</span>
+    </div>
+    <div class="card out" style="--c:var(--sum); grid-row:5; grid-column:4;">
+      <span class="t">Once on page load</span><span class="s">again on return after 30 min away</span>
+    </div>
+    <div class="card delay" style="--c:var(--sum); grid-row:5; grid-column:5;">
+      <span class="big">~5–15 min</span><span class="s">after Windguru publishes</span>
+    </div>
+  </div>
+
+  <div class="back">
+    <span class="line"></span>
+    <span class="chip warn"><b>Provider down</b> → the CDN keeps the last good copy: 24 h, or 1 h for live wind</span>
+    <span class="chip warn"><b>Errors</b> are never cached; Windguru calls pause 5–30 min, or 1 h if blocked</span>
+  </div>
+
+  <div class="recipes">
+    <div class="recipe"><h4>Fresh</h4><p>The CDN answers from its cache. The backend and providers aren't called at all.</p></div>
+    <div class="recipe"><h4>Stale while refreshing</h4><p>Once fresh time is up, one visitor gets the old copy while the CDN fetches a new one. Usually 1–3 s.</p></div>
+    <div class="recipe"><h4>Why "until the next run"</h4><p>A run never changes once published, so the CDN only asks again when the next one is due, and the backend only checks Windguru then. The summary reuses those copies.</p></div>
+    <div class="recipe"><h4>Change the timings</h4><p><code>cacheFor()</code> per route in <code>api/index.ts</code>; forecast and summary timing in <code>secondsUntilNextRun()</code>.</p></div>
+  </div>
+  </div>
+</section>
+
+<script>
+  const logo = document.getElementById("logo").innerHTML;
+  document.querySelectorAll("[data-logo]").forEach((el) => (el.innerHTML = logo));
+</script>
+</body>
+</html>

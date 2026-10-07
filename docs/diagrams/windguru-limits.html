@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: Geist, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, monospace;
+    --canvas: #09090b; --surface: #111113;
+    --strong: #fafafa; --text: #d4d4d8; --muted: #a1a1aa; --faint: #71717a;
+    --hairline: rgba(255,255,255,0.08);
+    --accent: #e11d48; --accent-text: #fb7185;
+    --live: #fb7185; --fc: #38bdf8; --spot: #fbbf24; --sum: #a78bfa; --green: #4ade80;
+    --glow-a: rgba(225,29,72,0.16); --glow-b: rgba(56,189,248,0.09);
+    --grid: rgba(255,255,255,0.025);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; font-family: var(--font); -webkit-font-smoothing: antialiased; color: var(--text); }
+  .slide { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--canvas);
+    background-image: radial-gradient(900px 600px at 8% 0%, var(--glow-a), transparent 60%), radial-gradient(900px 700px at 100% 100%, var(--glow-b), transparent 60%); }
+  .slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 64px 64px; mask-image: radial-gradient(1200px 800px at 50% 40%, black, transparent 75%); }
+  .slide > :not(template) { z-index: 1; }
+
+  .header { position: absolute; left: 120px; right: 120px; top: 64px; display: flex; align-items: flex-end; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 19px; font-weight: 600; color: var(--strong); margin-bottom: 18px; }
+  .logo { width: 36px; height: 36px; border-radius: 10px; background: var(--accent); display: grid; place-items: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.2); }
+  .logo svg { width: 18px; height: 18px; }
+  h1 { font-size: 54px; line-height: 1; font-weight: 600; letter-spacing: -0.035em; color: var(--strong); }
+  h1 em { font-style: normal; color: var(--accent); }
+  .legend { display: flex; gap: 18px; font-size: 15px; color: var(--muted); padding-bottom: 6px; }
+  .legend span { display: flex; align-items: center; gap: 8px; }
+  .legend i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+
+  code { font-family: var(--mono); font-size: 13.5px; color: var(--text); background: rgba(255,255,255,0.05); padding: 1px 5px; border-radius: 5px; }
+
+  .stack { position: absolute; left: 120px; top: 212px; width: 1680px; display: flex; flex-direction: column; gap: 26px; }
+  .board { display: grid; grid-template-columns: 300px 300px 400px 320px 240px; column-gap: 30px;
+    grid-template-rows: auto repeat(4, 124px); row-gap: 14px; }
+
+  .stage { display: flex; flex-direction: column; gap: 6px; padding-bottom: 2px; }
+  .stage .top { display: flex; align-items: center; gap: 10px; }
+  .num { flex: none; width: 28px; height: 28px; border-radius: 9px; background: rgba(225,29,72,0.14); box-shadow: inset 0 0 0 1px rgba(225,29,72,0.3); display: grid; place-items: center; font-size: 14px; font-weight: 700; color: var(--accent-text); }
+  .num.clock { background: rgba(255,255,255,0.05); box-shadow: inset 0 0 0 1px var(--hairline); }
+  .num.clock svg { width: 15px; height: 15px; stroke: var(--muted); }
+  .stage h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--strong); }
+  .file { font-family: var(--mono); font-size: 13px; color: var(--faint); }
+
+  .card { position: relative; border-radius: 18px; background: var(--surface); padding: 16px 20px;
+    box-shadow: 0 0 0 1px var(--hairline), 0 24px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+    display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  .lane { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c); }
+  .lane i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+  .t { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--strong); }
+  .s { font-size: 15px; line-height: 1.4; color: var(--muted); }
+  .big { font-size: 30px; font-weight: 600; letter-spacing: -0.02em; color: var(--strong); font-variant-numeric: tabular-nums; }
+  .big small { font-size: 17px; color: var(--muted); font-weight: 500; }
+
+  .edge::before { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c); }
+  .out::after { content: ""; position: absolute; top: 50%; left: 100%; width: 30px; height: 2px; background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 35%, transparent)); }
+
+  .backend { grid-row: 2 / span 4; grid-column: 2; justify-content: center; gap: 18px; padding: 24px; }
+  .backend .list { gap: 14px; }
+  .backend .t { font-size: 19px; }
+  .list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .list li { font-size: 15px; line-height: 1.38; color: var(--muted); padding-left: 14px; position: relative; }
+  .list li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--faint); }
+  .list li b { color: var(--strong); font-weight: 600; }
+  .stub { position: absolute; left: 100%; width: 30px; height: 2px; }
+
+  .delay { background: transparent; box-shadow: none; padding-left: 14px; }
+  .delay .big { font-size: 40px; color: var(--c); }
+
+  .back { position: relative; display: flex; align-items: center; gap: 12px; }
+  .back .line { position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: linear-gradient(90deg, rgba(74,222,128,0.12), rgba(74,222,128,0.6)); z-index: -1; }
+  .chip { padding: 7px 13px; border-radius: 999px; background: var(--canvas); box-shadow: inset 0 0 0 1px var(--hairline); font-size: 15px; color: var(--text); white-space: nowrap; }
+  .chip b { color: var(--strong); font-weight: 600; }
+  .chip.ok { color: var(--green); box-shadow: inset 0 0 0 1px rgba(74,222,128,0.35); font-weight: 600; }
+  .chip.warn b { color: var(--spot); }
+
+  .recipes { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 20px; }
+  .recipe { border-radius: 14px; padding: 14px 16px; background: rgba(255,255,255,0.025); box-shadow: inset 0 0 0 1px var(--hairline); display: flex; flex-direction: column; gap: 6px; }
+  .recipe h4 { font-size: 16px; font-weight: 600; color: var(--strong); }
+  .recipe p { font-size: 14px; line-height: 1.45; color: var(--muted); }
+
+  .board { grid-template-columns: 400px 420px 420px 320px; grid-template-rows: auto repeat(4, 118px); row-gap: 14px; }
+  .total { text-align: right; }
+  .total .big { font-size: 64px; letter-spacing: -0.03em; color: var(--accent-text); line-height: 1; }
+  .total .s { margin-top: 6px; }
+  .delay .big small { font-size: 16px; }
+  .fail { border-radius: 14px; padding: 14px 16px; background: rgba(255,255,255,0.025); box-shadow: inset 0 0 0 1px var(--hairline); display: flex; flex-direction: column; gap: 6px; }
+  .fail h4 { font-size: 16px; font-weight: 600; color: var(--strong); display: flex; justify-content: space-between; gap: 12px; }
+  .fail h4 span { color: var(--spot); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .fail p { font-size: 14px; line-height: 1.45; color: var(--muted); }
+  .fail .ok { color: var(--green); font-size: 13px; }
+  .section { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); margin-bottom: -18px; }
+</style>
+</head>
+<body>
+<template id="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg></template>
+
+<section class="slide" id="limits">
+  <div class="header">
+    <div>
+      <div class="brand"><span class="logo" data-logo></span>Kite Beach Forecast · Windguru limits guide</div>
+      <h1>Windguru calls a day: <em>the worst case</em></h1>
+    </div>
+    <div class="total">
+      <span class="big">236</span>
+      <div class="s">calls a day at most while Windguru is healthy</div>
+    </div>
+  </div>
+
+  <div class="stack">
+  <div class="board">
+    <div class="stage"><div class="top"><span class="num">1</span><h3>What is fetched</h3></div><span class="file">src/config/spots.ts · 6 spots</span></div>
+    <div class="stage"><div class="top"><span class="num">2</span><h3>When Windguru is asked</h3></div><span class="file">src/providers/windguru/</span></div>
+    <div class="stage"><div class="top"><span class="num">3</span><h3>What shares the answer</h3></div><span class="file">src/lib/store.ts · Upstash Redis</span></div>
+    <div class="stage"><div class="top"><span class="num clock"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span><h3>Worst case a day</h3></div><span class="file">any traffic</span></div>
+
+    <!-- Forecasts -->
+    <div class="card out" style="--c:var(--fc); grid-row:2; grid-column:1;">
+      <span class="lane"><i></i>Forecasts</span><span class="t">17 grid points</span><span class="s">6 hires (WRF) · 6 global (GFS) · 5 waves</span>
+    </div>
+    <div class="card out" style="--c:var(--fc); grid-row:2; grid-column:2;">
+      <span class="t">Once per new model run</span><span class="s">WRF 4 runs a day · GFS and GFS-Wave up to 8</span>
+    </div>
+    <div class="card out" style="--c:var(--fc); grid-row:2; grid-column:3;">
+      <span class="t">Stored per run for 3 days</span><span class="s">every instance, CDN region and the summary</span>
+    </div>
+    <div class="card delay" style="--c:var(--fc); grid-row:2; grid-column:4;">
+      <span class="big">112</span><span class="s">6×4 + 6×8 + 5×8</span>
+    </div>
+
+    <!-- Run lookups -->
+    <div class="card out" style="--c:var(--live); grid-row:3; grid-column:1;">
+      <span class="lane"><i></i>Run lookups</span><span class="t">Which run is newest?</span><span class="s">one call lists every model, via Blouberg</span>
+    </div>
+    <div class="card out" style="--c:var(--live); grid-row:3; grid-column:2;">
+      <span class="t">Only when a run is due</span><span class="s">30 min ahead of schedule, then every 10 min</span>
+    </div>
+    <div class="card out" style="--c:var(--live); grid-row:3; grid-column:3;">
+      <span class="t">Stored per expected runs</span><span class="s">reused until the schedule moves on</span>
+    </div>
+    <div class="card delay" style="--c:var(--live); grid-row:3; grid-column:4;">
+      <span class="big">37–112</span><span class="s">on time · every run 2 h late</span>
+    </div>
+
+    <!-- Spot info -->
+    <div class="card out" style="--c:var(--spot); grid-row:4; grid-column:1;">
+      <span class="lane"><i></i>Spot info</span><span class="t">6 spots</span><span class="s">Sea temp · daylight · tide constants</span>
+    </div>
+    <div class="card out" style="--c:var(--spot); grid-row:4; grid-column:2;">
+      <span class="t">When the copy is 12 h old</span><span class="s">changes about daily</span>
+    </div>
+    <div class="card out" style="--c:var(--spot); grid-row:4; grid-column:3;">
+      <span class="t">Stored for 12 h</span><span class="s">and cached 12 h at the CDN</span>
+    </div>
+    <div class="card delay" style="--c:var(--spot); grid-row:4; grid-column:4;">
+      <span class="big">12</span><span class="s">6 spots × 2</span>
+    </div>
+
+    <!-- Summary -->
+    <div class="card out" style="--c:var(--sum); grid-row:5; grid-column:1;">
+      <span class="lane"><i></i>Home summary</span><span class="t">6 hires forecasts</span><span class="s"><code>GET /summary</code>, 4 spots at a time</span>
+    </div>
+    <div class="card out" style="--c:var(--sum); grid-row:5; grid-column:2;">
+      <span class="t">Never on its own</span><span class="s">reads the same stored runs as the spot pages</span>
+    </div>
+    <div class="card out" style="--c:var(--sum); grid-row:5; grid-column:3;">
+      <span class="t">Stored runs and lookups</span><span class="s">already counted above</span>
+    </div>
+    <div class="card delay" style="--c:var(--sum); grid-row:5; grid-column:4;">
+      <span class="big">0</span><span class="s">extra</span>
+    </div>
+  </div>
+
+  <div class="back">
+    <span class="line"></span>
+    <span class="chip ok">Simulated: 24 h, a request every minute → 112 + 37–112 + 12 = 161–236</span>
+    <span class="chip">Few visitors: <b>far fewer</b></span>
+    <span class="chip warn"><b>Daily budget:</b> 500 calls, shared by every instance</span>
+  </div>
+
+  <div class="section">When Windguru is unhealthy: limits per function instance, from src/providers/windguru/client.ts</div>
+  <div class="recipes">
+    <div class="fail"><h4>Blocked by Windguru <span>~24 / day</span></h4><p>403, 429 or "forbidden": every call stops for an hour, then one call checks whether it's back.</p><span class="ok">Hard cap for any case: 500 a day</span></div>
+    <div class="fail"><h4>Windguru down <span>≤ ~96 / day</span></h4><p>5 failures in a row pause calls 5 min, doubling to 30. When a pause ends only one call goes out.</p><span class="ok">Retries once, never a burst</span></div>
+    <div class="fail"><h4>Error answers everywhere <span>~48 / day</span></h4><p>Count towards the breaker; each URL also waits 1, then 5, then 15 min before it's asked again.</p><span class="ok">One bad URL alone: ≤ 96 a day</span></div>
+    <div class="fail"><h4>Store unavailable <span>0 / day</span></h4><p>Missing or failing (e.g. the free allowance used up): no calls at all. Visitors keep the last copy for 24 h, then a 503.</p><span class="ok">Tested: 72 requests → 0 calls</span></div>
+  </div>
+  </div>
+</section>
+
+<script>
+  const logo = document.getElementById("logo").innerHTML;
+  document.querySelectorAll("[data-logo]").forEach((el) => (el.innerHTML = logo));
+</script>
+</body>
+</html>
