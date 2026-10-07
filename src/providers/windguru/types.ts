@@ -11,6 +11,9 @@ export interface WindguruSpot {
 export interface WindguruModel {
     id: number;
     name: string;
-    /** The run to ask for when Windguru's latest-run lookup fails, worked out from the publishing schedule */
-    scheduledRun: () => string;
+    /**
+     * The run that should be out at a given time, from the publishing schedule. Decides when to ask Windguru for new
+     * runs, and is what's asked for when that lookup fails
+     */
+    scheduledRun: (at: Date) => string;
 }
