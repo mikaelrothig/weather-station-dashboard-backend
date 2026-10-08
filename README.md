@@ -54,8 +54,6 @@ The response types are defined in `src/providers/types.ts`.
 
 ## How it works
 
-![Backend guide: one request through the Express app, route, provider adapter and HTTP client](docs/backend-guide.png)
-
 A request passes through four layers:
 
 1. **Express app** (`api/index.ts`) sets cache headers and turns errors into JSON responses.
@@ -103,8 +101,6 @@ The routes and the frontend don't need to change.
 
 ## Caching and delays
 
-![Data pipeline: caches and delays from source to screen](docs/data-pipeline.png)
-
 Vercel's CDN caches each response, so the providers are only called when the cached copy expires:
 
 | Data | Cached for | If the provider is down |
@@ -130,8 +126,6 @@ Calls to Windguru also go through three limits (`src/providers/windguru/client.t
 - **Error answers.** A URL Windguru answers with an error (for example a run it can't serve yet) isn't asked again for 1, then 5, then 15 minutes.
 - **Daily budget.** At most 500 HTTP calls to Windguru a day (UTC), counted in the store across every instance and region, retries included. A healthy day needs at most about 240. Change it with `WINDGURU_DAILY_BUDGET`.
 
-![Windguru limits: what is fetched, when, what shares it, and the worst case a day](docs/windguru-limits.png)
-
 With the store, Windguru sees at most about 240 calls a day however many people visit:
 
 | Calls a day | Worst case |
@@ -152,7 +146,3 @@ The summary reads each spot's forecast through the provider, four spots at a tim
 The backend deploys to Vercel. `vercel.json` sends every request to `api/index.ts`.
 
 Vercel turns every file under `api/` into its own serverless function, and the Hobby plan allows at most 12. Keep `api/` to the single entry point and put all other code in `src/`.
-
-## Diagrams
-
-The HTML sources for the images are in `docs/diagrams/`. Update them when the code they describe changes.
