@@ -110,7 +110,7 @@
       <h1>Windguru calls a day: <em>the worst case</em></h1>
     </div>
     <div class="total">
-      <span class="big">236</span>
+      <span class="big">277</span>
       <div class="s">calls a day at most while Windguru is healthy</div>
     </div>
   </div>
@@ -147,7 +147,7 @@
       <span class="t">Stored per expected runs</span><span class="s">reused until the schedule moves on</span>
     </div>
     <div class="card delay" style="--c:var(--live); grid-row:3; grid-column:4;">
-      <span class="big">37–112</span><span class="s">on time · every run 2 h late</span>
+      <span class="big">153</span><span class="s">144 every 10 min + 9 as runs come due</span>
     </div>
 
     <!-- Spot info -->
@@ -181,16 +181,16 @@
 
   <div class="back">
     <span class="line"></span>
-    <span class="chip ok">Simulated: 24 h, a request every minute → 112 + 37–112 + 12 = 161–236</span>
-    <span class="chip">Few visitors: <b>far fewer</b></span>
+    <span class="chip ok">Worst case: 112 + 153 + 12 = 277</span>
+    <span class="chip">Runs on time, traffic all day: <b>~128</b> (79 + 37 + 12)</span>
     <span class="chip warn"><b>Daily budget:</b> 500 calls, shared by every instance</span>
   </div>
 
   <div class="section">When Windguru is unhealthy: limits per function instance, from src/providers/windguru/client.ts</div>
   <div class="recipes">
     <div class="fail"><h4>Blocked by Windguru <span>~24 / day</span></h4><p>403, 429 or "forbidden": every call stops for an hour, then one call checks whether it's back.</p><span class="ok">Hard cap for any case: 500 a day</span></div>
-    <div class="fail"><h4>Windguru down <span>≤ ~96 / day</span></h4><p>5 failures in a row pause calls 5 min, doubling to 30. When a pause ends only one call goes out.</p><span class="ok">Retries once, never a burst</span></div>
-    <div class="fail"><h4>Error answers everywhere <span>~48 / day</span></h4><p>Count towards the breaker; each URL also waits 1, then 5, then 15 min before it's asked again.</p><span class="ok">One bad URL alone: ≤ 96 a day</span></div>
+    <div class="fail"><h4>Windguru down <span>~110 / day</span></h4><p>5 failures in a row pause calls 5 min, doubling to 30. When a pause ends only one call goes out.</p><span class="ok">Retries once, never a burst</span></div>
+    <div class="fail"><h4>Error answers everywhere <span>~55 / day</span></h4><p>Count towards the breaker; each URL also waits 1, then 5, then 15 min before it's asked again.</p><span class="ok">One bad URL alone: ≤ 96 a day</span></div>
     <div class="fail"><h4>Store unavailable <span>0 / day</span></h4><p>Missing or failing (e.g. the free allowance used up): no calls at all. Visitors keep the last copy for 24 h, then a 503.</p><span class="ok">Tested: 72 requests → 0 calls</span></div>
   </div>
   </div>
